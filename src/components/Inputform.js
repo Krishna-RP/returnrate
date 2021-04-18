@@ -20,7 +20,7 @@ function InputForm() {
         text: "Number of years",
       },
     },
-    yAxis: { 
+    yAxis: {
       title: {
         text: "Value of investment",
       },
@@ -56,7 +56,6 @@ function InputForm() {
         100;
       setRate(calculation.toFixed(2));
 
-      console.log(options);
       setOptions({
         title: {
           text: "Annual Rate of return on Investment",
