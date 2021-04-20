@@ -1,7 +1,6 @@
 import React from "react";
 import "./index.css";
 import "./App.css";
-
 //components
 import InputForm from "./components/Inputform";
 import { Header } from "semantic-ui-react";
@@ -13,7 +12,7 @@ function App() {
         <Header
           as="h1"
           icon="chart line"
-          content="Calculate required rate of return for you goal"
+          content="Calculate required rate of return for your goal"
         />
       </div>
       <InputForm />

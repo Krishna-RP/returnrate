@@ -3,6 +3,7 @@ import "../App.css";
 import Highchart from "highcharts/highcharts.src";
 import HighchartsReact from "highcharts-react-official";
 import { Button, Form, FormField, Segment } from "semantic-ui-react";
+import RateFinder from "./RateFinder";
 
 function InputForm() {
   const [initial, setInitial] = useState("");
@@ -38,48 +39,57 @@ function InputForm() {
   }
 
   function handleSubmit(e) {
-    e.preventDefault();
-    try {
-      var results = [];
-      var investment = initial;
-      var year = parseInt(years);
-      for (var i = 0; i <= year; i++) {
-        investment = i; // formula to calculate investment value per year till goal
-        results[i] = investment;
+    var i = parseFloat(initial),
+      y = parseFloat(years),
+      a = parseFloat(annual),
+      inf = parseFloat(inflation),
+      t = parseFloat(targetamount);
+
+    var realRateofReturn = [];
+    realRateofReturn = RateFinder(i, t, a, y);
+    if (realRateofReturn.length === 0) {
+      const confirmBox = window.confirm(
+        "Please check the values as investment already exceeds target?"
+      );
+      if (confirmBox === false) {
+        handleClear();
       }
-
-      //calculating the rate of return required to reach the goal
-      var calculation =
-        ((1 + (targetamount - initial + years * annual) / initial) /
-          (1 + inflation / 100) -
-          1) *
-        100;
-      setRate(calculation.toFixed(2));
-
-      setOptions({
-        title: {
-          text: "Annual Rate of return on Investment",
-        },
-        xAxis: {
-          title: {
-            text: "Number of years",
-          },
-        },
-        yAxis: {
-          title: {
-            text: "Value of investment",
-          },
-        },
-        series: [
-          {
-            name: "",
-            data: results,
-          },
-        ],
-      });
-    } catch (e) {
-      alert("Failed to calculate");
+    } else {
+      var nominalRate = ((1 + realRateofReturn[0]) * (1 + inf / 100) - 1) * 100;
+      setRate(nominalRate);
     }
+
+    var results = [];
+    var investment = i;
+    for (var j = 0; j <= y; j++) {
+      results[j] = Math.round(investment);
+
+      investment =
+        investment * (1 + realRateofReturn[0]) +
+        (a * (1 + realRateofReturn[0] - 1)) / realRateofReturn[0];
+    }
+
+    setOptions({
+      title: {
+        text: "Annual Rate of return on Investment",
+      },
+      xAxis: {
+        title: {
+          text: "Number of years",
+        },
+      },
+      yAxis: {
+        title: {
+          text: "Value of investment",
+        },
+      },
+      series: [
+        {
+          name: "",
+          data: results,
+        },
+      ],
+    });
   }
 
   return (
@@ -87,7 +97,7 @@ function InputForm() {
       <Segment clearing>
         <Form onSubmit={handleSubmit} autoComplete="off">
           <FormField>
-            <label> Initial Amount</label>
+            <label> Initial Amount ($)</label>
             <Form.Input
               required
               onChange={(e) => setInitial(e.target.value)}
@@ -98,10 +108,10 @@ function InputForm() {
           </FormField>
 
           <FormField>
-            <label> Target Amount</label>
+            <label> Target Amount ($) </label>
             <Form.Input
               required
-              min={initial} // assuming that you want to set your goal higher than you invested value
+              min={(parseFloat(initial) + 1).toString()} // assuming that you want to set your goal higher than you invested value
               onChange={(e) => setTargetAmount(e.target.value)}
               type="number"
               placeholder="Amount in dollars"
@@ -121,7 +131,7 @@ function InputForm() {
           </FormField>
 
           <FormField>
-            <label> Annual Contribution</label>
+            <label> Annual Contribution at the year end ($) </label>
             <Form.Input
               required
               min="0"
@@ -137,15 +147,16 @@ function InputForm() {
             <Form.Input
               required
               onChange={(e) => setInflation(e.target.value)}
-              type="number"
+              type="decimal"
               placeholder="Rate in percentage"
               name="inflation"
             />
           </FormField>
+
           {rate && (
             <FormField>
               <label> Required Rate of Return</label>
-              <label style={{ fontWeight: 400 }}> {rate} </label>
+              <label style={{ fontWeight: 400 }}> {rate.toFixed(2)} </label>
             </FormField>
           )}
 
