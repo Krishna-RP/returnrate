@@ -1,4 +1,4 @@
-[Returnrate Calculator](returnrate.netlify.app).
+[Returnrate Calculator](https://returnrate.netlify.app/).
 
 # Getting Started with Create React App
 
