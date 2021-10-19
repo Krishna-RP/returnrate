@@ -1,9 +1,9 @@
 .App-header {
-  overflow: hidden;
-  padding: 60px;
+  padding: 30px;
   text-align: center;
   background: #1abc9c;
   color: white;
   font-size: 80px;
-  margin-bottom: 20px;
+  margin-top: 60px;
+  flex: auto;
 }
